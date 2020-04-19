@@ -9,10 +9,3 @@ db.enablePersistence()
             console.log("persistência não implementada")
         }
     })
-
-
-
-const removeRecado = (id) => {
-    const recado = document.querySelector('.recado[data-id=' + id + ']');
-    recado.remove();
-}

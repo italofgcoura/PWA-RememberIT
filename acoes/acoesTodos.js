@@ -1,19 +1,6 @@
 
-// apagar recado
+//só preciso saber isso na página de "todos recados"
 
-const containerRecados = document.querySelector('#iDrecados');
-// console.log("rec", containerRecados)
-containerRecados.addEventListener('click', event => {
-    console.log(event);
-    if (event.target.tagName === 'svg' || event.target.tagName === 'i' || event.target.tagName === 'path') {
-        console.log("delteando")
-        const id = event.target.getAttribute('data-id');
-        console.log(id);
-        db.collection('recados').doc(id).delete();
-    }
-})
-
-// real-time listener
 db.collection('recados').onSnapshot((snapshot) => {
     console.log("doccahnges", snapshot.docChanges());
     // para cada alteração no banco de dados vai adcionar ou remover
@@ -30,9 +17,26 @@ db.collection('recados').onSnapshot((snapshot) => {
     })
 })
 
+// apagar recado
+const containerRecados = document.querySelector('#iDrecados');
+// console.log("rec", containerRecados)
+containerRecados.addEventListener('click', event => {
+    console.log(event);
+    if (event.target.tagName === 'svg' || event.target.tagName === 'i' || event.target.tagName === 'path') {
+        console.log("deletando")
+        const id = event.target.getAttribute('data-id');
+        db.collection('recados').doc(id).delete();
+    }
+})
 
+// remover recado
+const removeRecado = (id) => {
+    const recado = document.querySelector('.recado[data-id=' + id + ']');
+    recado.remove();
+}
+
+// adcionar recado
 const adicionarRecado = (dados, id) => {
-
     const html =
         '<div class="recado" data-id=' + id + '><div class="content">' + dados.texto + '</div>' +
         '<button onclick="lermais(this)" > + ler mais</button> <i class="delete" data-id=' + id + '>' +

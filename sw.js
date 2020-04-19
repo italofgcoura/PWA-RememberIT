@@ -1,90 +1,82 @@
-const staticCache = 'statica-v3';
-const dynamicCache = 'dinamica-v3';
+// ALTERAR A VERSÃO CASO ALGUM DOS ASSETS TENHO SIDO ALTERADO PARA REINSTALAR O SW
+const cacheStatica = 'statica-v2';
+const cacheDinamica = 'dinamica-v2';
+
 const assets = [
     '/',
     '/index.html',
     '/fallback-page.html',
     '/acoes/acoes.js',
-    '/dbHome.js',
-    '/estilos/estilos.css',];
+    '/estilos/estilos.css'];
 
-// função para  limitar o tamanho da cache
 
-const tamanhoCache = (nomeCache, tamCache) => {
-    caches.open(nomeCache).then(cache => {
+// limitar o tamanho da cache
+const cacheLimite = (nomeCache, tamanhoCache) => {
+    caches.open(nome).then(cache => {
         cache.keys().then(keys => {
-            if (keys.length > tamCache) {
-                cache.delete(keys[0])
-                    .then(tamanhoCache(nomeCache, tamCache));
+            if (keys.lengh > size) {
+                cache.delete(keys[0].then(cacheLimite(nome, tamanho)))
             }
         })
     })
-};
+}
+
 
 // sw instalado
 self.addEventListener('install', event => {
-    console.log("SW  Instalado")
+    console.log("SW Instalado")
     //waitUntil serve para o install não desligar o service worker enquanto os assets não forem carregados 
     event.waitUntil(
-        caches.open(staticCache).then(cache => {
+        caches.open(cacheStatica).then(cache => {
             // console.log('cashe assets');
             cache.addAll(assets);
         })
     )
 });
 
-// sw aativado
+// sw ativado
 self.addEventListener('activate', event => {
+    console.log("ativado")
+
     event.waitUntil(
         // quando for ativado, pegamos todas as key de todas as caches disponíveis
         caches.keys().then(keys => {
-            // console.log(keys)
+            console.log(keys)
             // dispara uma função de callback
             // promise All retorna todas as keys
             return Promise.all(keys
                 // filtra-se as keys, se não forem iguais ao nome da cache atual (static Assets)
-                .filter(key => key != staticCache && key != dynamicCache)
+                .filter(key => key !== cacheStatica && key !== cacheDinamica)
                 .map(key => caches.delete(key))
             );
         })
     )
 });
 
-// sw aativado
+// fetch events
 
-// quando o usuário está online e entra na tela, se ele acessar
-// uma página, o código abaixo verifica se a página já não está na cache,
-// se não estiver ele guarda na cache específica, que é a cache dinâmica
-// isso é feito para não gastar recurso "à toa"
 
+// quando o usuário entra no app, e visita a página, dispara o fetch
 self.addEventListener('fetch', event => {
-    if (event.request.url.indexOf('firestore.googleapis.com') === -1) {
-        console.log(event);
-        event.respondWith(
-            caches.match(event.request).then(cacheRes => {
-                // se estiver já na cashe, retorna a o asset, se não retorna o request
-                return cacheRes || fetch(event.request).then(fetchRes => {
-                    // para guardar um asset que não está guardado já
-                    return caches.open(dynamicCache).then(cache => {
-                        cache.put(event.request.url, fetchRes.clone());
-                        tamanhoCache(dynamicCache, 15);
-                        return fetchRes;
-                    })
-                });
-            }).catch(() => {
-                // se o asset que for acessado for html e não tiver na cache, retorna a página callback default html
-                if (event.request.url.indexOf('.html') > -1) {
-                    return caches.match('/fallback-page.html');
-                }
-
-            })
-        );
-    }
+    // console.log(event);
+    // AQUI VAI INTERCEPTAR O FETCH
+    // respondWith PAUSA o fetch e verifica se está na cashe, SE não estiver vai pro servidor
+    event.respondWith(
+        // verifica na cashe se existe a página/recurso que foi feito o fetch
+        caches.match(event.request).then(cacheResponse => {
+            // se tiver na cache retorna na cacheResponse
+            return cacheResponse || fetch(event.request).then(fetchResponse => {
+                return caches.open(cacheDinamica).then(cache => {
+                    cache.put(event.request.url, fetchResponse.clone());
+                    // verificar o tamanho da cache
+                    tamanhoCache(cacheDinamica, 15);
+                    return fetchResponse;
+                })
+            });
+        }).catch(() => {
+            if (event.request.url.indexOf('.html') > -1) {
+                return caches.match('fallback-page.html')
+            }
+        })
+    );
 });
-
-
-
-
-// NOTAS
-// SEMPRE QUE SE ALTERAR ALGUMA COISA NOS ASSETS, TEM DE ATUALIZAR O SW
-// PARA QUE ELE REINSTALE E PEGUE OS NOVOS ASSETS

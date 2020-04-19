@@ -9,5 +9,6 @@ if ('serviceWorker' in navigator) {
 
 function lermais(element) {
   $(element).siblings(".content").toggleClass("content--full");
-
 }
+
+
