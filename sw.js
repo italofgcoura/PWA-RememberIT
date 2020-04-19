@@ -1,6 +1,6 @@
 // ALTERAR A VERSÃO CASO ALGUM DOS ASSETS TENHO SIDO ALTERADO PARA REINSTALAR O SW
-const cacheStatica = 'statica-v5';
-const cacheDinamica = 'dinamica-v5';
+const cacheStatica = 'statica-v9';
+const cacheDinamica = 'dinamica-v9';
 
 const assets = [
     '/',
@@ -11,26 +11,12 @@ const assets = [
     '/acoes/dbHome.js',
     '/estilos/estilos.css'];
 
-
-// limitar o tamanho da cache
-// const cacheLimite = (nomeCache, tamanhoCache) => {
-//     caches.open(nome).then(cache => {
-//         cache.keys().then(keys => {
-//             if (keys.lengh > size) {
-//                 cache.delete(keys[0].then(cacheLimite(nomeCache, tamanhoCache)))
-//             }
-//         })
-//     })
-// }
-
-
 // sw instalado
 self.addEventListener('install', event => {
     console.log("SW Instalado")
     //waitUntil serve para o install não desligar o service worker enquanto os assets não forem carregados 
     event.waitUntil(
         caches.open(cacheStatica).then(cache => {
-            // console.log('cashe assets');
             cache.addAll(assets);
         })
     )
@@ -39,7 +25,6 @@ self.addEventListener('install', event => {
 // sw ativado
 self.addEventListener('activate', event => {
     console.log("ativado")
-
     event.waitUntil(
         // quando for ativado, pegamos todas as key de todas as caches disponíveis
         caches.keys().then(keys => {
@@ -56,12 +41,8 @@ self.addEventListener('activate', event => {
 });
 
 // fetch events
-
-
 // quando o usuário entra no app, e visita a página, dispara o fetch
 self.addEventListener('fetch', event => {
-    // console.log(event);
-    // if (event.request.url.indexOf('firestore.googleapis.com') === -1) {
     // AQUI VAI INTERCEPTAR O FETCH
     // respondWith PAUSA o fetch e verifica se está na cashe, SE não estiver vai pro servidor
     event.respondWith(
@@ -71,8 +52,6 @@ self.addEventListener('fetch', event => {
             return cacheResponse || fetch(event.request).then(fetchResponse => {
                 return caches.open(cacheDinamica).then(cache => {
                     cache.put(event.request.url, fetchResponse.clone());
-                    // verificar o tamanho da cache
-                    // tamanhoCache(cacheDinamica, 15);
                     return fetchResponse;
                 })
             });
@@ -83,5 +62,4 @@ self.addEventListener('fetch', event => {
         })
 
     );
-    // }
 });
