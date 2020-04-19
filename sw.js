@@ -1,25 +1,26 @@
 // ALTERAR A VERSÃO CASO ALGUM DOS ASSETS TENHO SIDO ALTERADO PARA REINSTALAR O SW
-const cacheStatica = 'statica-v2';
-const cacheDinamica = 'dinamica-v2';
+const cacheStatica = 'statica-v9';
+const cacheDinamica = 'dinamica-v9';
 
 const assets = [
     '/',
     '/index.html',
     '/fallback-page.html',
     '/acoes/acoes.js',
+    '/acoes/dbHome.js',
     '/estilos/estilos.css'];
 
 
 // limitar o tamanho da cache
-const cacheLimite = (nomeCache, tamanhoCache) => {
-    caches.open(nome).then(cache => {
-        cache.keys().then(keys => {
-            if (keys.lengh > size) {
-                cache.delete(keys[0].then(cacheLimite(nome, tamanho)))
-            }
-        })
-    })
-}
+// const cacheLimite = (nomeCache, tamanhoCache) => {
+//     caches.open(nome).then(cache => {
+//         cache.keys().then(keys => {
+//             if (keys.lengh > size) {
+//                 cache.delete(keys[0].then(cacheLimite(nomeCache, tamanhoCache)))
+//             }
+//         })
+//     })
+// }
 
 
 // sw instalado
@@ -59,24 +60,27 @@ self.addEventListener('activate', event => {
 // quando o usuário entra no app, e visita a página, dispara o fetch
 self.addEventListener('fetch', event => {
     // console.log(event);
-    // AQUI VAI INTERCEPTAR O FETCH
-    // respondWith PAUSA o fetch e verifica se está na cashe, SE não estiver vai pro servidor
-    event.respondWith(
-        // verifica na cashe se existe a página/recurso que foi feito o fetch
-        caches.match(event.request).then(cacheResponse => {
-            // se tiver na cache retorna na cacheResponse
-            return cacheResponse || fetch(event.request).then(fetchResponse => {
-                return caches.open(cacheDinamica).then(cache => {
-                    cache.put(event.request.url, fetchResponse.clone());
-                    // verificar o tamanho da cache
-                    tamanhoCache(cacheDinamica, 15);
-                    return fetchResponse;
-                })
-            });
-        }).catch(() => {
-            if (event.request.url.indexOf('.html') > -1) {
-                return caches.match('fallback-page.html')
-            }
-        })
-    );
+    if (event.request.url.indexOf('firestore.googleapis.com') === -1) {
+        // AQUI VAI INTERCEPTAR O FETCH
+        // respondWith PAUSA o fetch e verifica se está na cashe, SE não estiver vai pro servidor
+        event.respondWith(
+            // verifica na cashe se existe a página/recurso que foi feito o fetch
+            caches.match(event.request).then(cacheResponse => {
+                // se tiver na cache retorna na cacheResponse
+                return cacheResponse || fetch(event.request).then(fetchResponse => {
+                    return caches.open(cacheDinamica).then(cache => {
+                        cache.put(event.request.url, fetchResponse.clone());
+                        // verificar o tamanho da cache
+                        // tamanhoCache(cacheDinamica, 15);
+                        return fetchResponse;
+                    })
+                });
+            }).catch(() => {
+                if (event.request.url.indexOf('.html') > -1) {
+                    return caches.match('fallback-page.html')
+                }
+            })
+
+        );
+    }
 });
