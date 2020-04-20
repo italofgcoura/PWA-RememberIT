@@ -13,7 +13,6 @@ const assets = [
 
 // sw instalado
 self.addEventListener('install', event => {
-    console.log("SW Instalado")
     //waitUntil serve para o install não desligar o service worker enquanto os assets não forem carregados 
     event.waitUntil(
         caches.open(cacheStatica).then(cache => {
@@ -24,11 +23,9 @@ self.addEventListener('install', event => {
 
 // sw ativado
 self.addEventListener('activate', event => {
-    console.log("ativado")
     event.waitUntil(
         // quando for ativado, pegamos todas as key de todas as caches disponíveis
         caches.keys().then(keys => {
-            console.log(keys)
             // dispara uma função de callback
             // promise All retorna todas as keys
             return Promise.all(keys

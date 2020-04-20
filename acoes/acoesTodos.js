@@ -18,10 +18,8 @@ const adicionarRecado = (dados, id) => {
 }
 
 db.collection('recados').onSnapshot((snapshot) => {
-    console.log("docchanges", snapshot.docChanges());
     // para cada alteração no banco de dados vai adcionar ou remover
     snapshot.docChanges().forEach(change => {
-        // console.log(change, change.doc.data(), change.doc.id, change.doc.createTime());
         if (change.type === 'added') {
             // adcionar à lista de recados
             adicionarRecado(change.doc.data(), change.doc.id);
@@ -36,11 +34,8 @@ db.collection('recados').onSnapshot((snapshot) => {
 
 // apagar recado
 const containerRecados = document.querySelector('#iDrecados');
-// console.log("rec", containerRecados)
 containerRecados.addEventListener('click', event => {
-    console.log(event);
     if (event.target.tagName === 'svg' || event.target.tagName === 'i' || event.target.tagName === 'path') {
-        console.log("deletando")
         const id = event.target.getAttribute('data-id');
         db.collection('recados').doc(id).delete();
     }
