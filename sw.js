@@ -1,6 +1,6 @@
 // ALTERAR A VERSÃO CASO ALGUM DOS ASSETS TENHO SIDO ALTERADO PARA REINSTALAR O SW
-const cacheStatica = 'statica-v9';
-const cacheDinamica = 'dinamica-v9';
+const cacheStatica = 'statica-v1';
+const cacheDinamica = 'dinamica-v1';
 
 const assets = [
     '/',
