@@ -1,3 +1,6 @@
+db.collection("recados").orderBy("data", "asc");
+
+
 // método para carregamento de dados offline
 
 db.enablePersistence()
