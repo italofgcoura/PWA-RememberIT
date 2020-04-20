@@ -17,7 +17,21 @@ const adicionarRecado = (dados, id) => {
     recados.innerHTML += html;
 }
 
-db.collection('recados').onSnapshot((snapshot) => {
+
+// function ordernar(db) {
+//     let ord = db.collection('recados');
+//     let ordenado = ord.orderBy('data', 'asc');
+
+//     console.log(ordenado);
+// }
+
+
+db.collection('recados').orderBy('data').onSnapshot((snapshot) => {
+
+    // let todos = snapshot.docChanges();
+    // console.log("todos");
+    // console.log(todos);
+// todos.orderBy("")
     // para cada alteração no banco de dados vai adcionar ou remover
     snapshot.docChanges().forEach(change => {
         if (change.type === 'added') {
